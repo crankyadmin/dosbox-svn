@@ -18,15 +18,14 @@
 
 
 // ******************************************************
-// SDL CDROM 
+// SDL CDROM
 // ******************************************************
 
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-
+#include <SDL2/SDL.h>
 #include "dosbox.h"
-#include "SDL.h"
 #include "support.h"
 #include "cdrom.h"
 
@@ -42,7 +41,7 @@ CDROM_Interface_SDL::~CDROM_Interface_SDL(void) {
 	cd		= 0;
 }
 
-bool CDROM_Interface_SDL::SetDevice(char* path, int forceCD) { 
+bool CDROM_Interface_SDL::SetDevice(char* path, int forceCD) {
 	char buffer[512];
 	strcpy(buffer,path);
 	upcase(buffer);
@@ -53,8 +52,8 @@ bool CDROM_Interface_SDL::SetDevice(char* path, int forceCD) {
 	        cd = SDL_CDOpen(driveID);
 	        SDL_CDStatus(cd);
 	   	return true;
-	};	
-	
+	};
+
 	const char* cdname = 0;
 	for (int i=0; i<num; i++) {
 		cdname = SDL_CDName(i);
@@ -65,7 +64,7 @@ bool CDROM_Interface_SDL::SetDevice(char* path, int forceCD) {
 			return true;
 		};
 	};
-	return false; 
+	return false;
 }
 
 bool CDROM_Interface_SDL::GetAudioTracks(int& stTrack, int& end, TMSF& leadOut) {
@@ -83,7 +82,7 @@ bool CDROM_Interface_SDL::GetAudioTrackInfo(int track, TMSF& start, unsigned cha
 		FRAMES_TO_MSF(cd->track[track-1].offset,&start.min,&start.sec,&start.fr);
 		attr	= cd->track[track-1].type<<4;//sdl uses 0 for audio and 4 for data. instead of 0x00 and 0x40
 	}
-	return CD_INDRIVE(SDL_CDStatus(cd));	
+	return CD_INDRIVE(SDL_CDStatus(cd));
 }
 
 bool CDROM_Interface_SDL::GetAudioSub(unsigned char& attr, unsigned char& track, unsigned char& index, TMSF& relPos, TMSF& absPos) {
@@ -94,7 +93,7 @@ bool CDROM_Interface_SDL::GetAudioSub(unsigned char& attr, unsigned char& track,
 		FRAMES_TO_MSF(cd->cur_frame,&relPos.min,&relPos.sec,&relPos.fr);
 		FRAMES_TO_MSF(cd->cur_frame+cd->track[track].offset,&absPos.min,&absPos.sec,&absPos.fr);
 	}
-	return CD_INDRIVE(SDL_CDStatus(cd));		
+	return CD_INDRIVE(SDL_CDStatus(cd));
 }
 
 bool CDROM_Interface_SDL::GetAudioStatus(bool& playing, bool& pause){
@@ -104,7 +103,7 @@ bool CDROM_Interface_SDL::GetAudioStatus(bool& playing, bool& pause){
 	}
 	return CD_INDRIVE(SDL_CDStatus(cd));
 }
-	
+
 bool CDROM_Interface_SDL::GetMediaTrayStatus(bool& mediaPresent, bool& mediaChanged, bool& trayOpen) {
 	SDL_CDStatus(cd);
 	mediaPresent = (cd->status!=CD_TRAYEMPTY) && (cd->status!=CD_ERROR);
@@ -115,7 +114,7 @@ bool CDROM_Interface_SDL::GetMediaTrayStatus(bool& mediaPresent, bool& mediaChan
 	return true;
 }
 
-bool CDROM_Interface_SDL::PlayAudioSector(unsigned long start,unsigned long len) { 
+bool CDROM_Interface_SDL::PlayAudioSector(unsigned long start,unsigned long len) {
 	// Has to be there, otherwise wrong cd status report (dunno why, sdl bug ?)
 	SDL_CDClose(cd);
 	cd = SDL_CDOpen(driveID);
@@ -123,7 +122,7 @@ bool CDROM_Interface_SDL::PlayAudioSector(unsigned long start,unsigned long len)
 	return success;
 }
 
-bool CDROM_Interface_SDL::PauseAudio(bool resume) { 
+bool CDROM_Interface_SDL::PauseAudio(bool resume) {
 	bool success;
 	if (resume) success = (SDL_CDResume(cd)==0);
 	else		success = (SDL_CDPause (cd)==0);
@@ -147,7 +146,7 @@ int CDROM_GetMountType(char* path, int forceCD) {
 // 0 - physical CDROM
 // 1 - Iso file
 // 2 - subdirectory
-	// 1. Smells like a real cdrom 
+	// 1. Smells like a real cdrom
 	// if ((strlen(path)<=3) && (path[2]=='\\') && (strchr(path,'\\')==strrchr(path,'\\')) && 	(GetDriveType(path)==DRIVE_CDROM)) return 0;
 
 	const char* cdName;
@@ -169,10 +168,10 @@ int CDROM_GetMountType(char* path, int forceCD) {
 		cdName = SDL_CDName(i);
 		if (strcmp(buffer,cdName)==0) return 0;
 	};
-	
+
 	// Detect ISO
 	struct stat file_stat;
-	if ((stat(path, &file_stat) == 0) && (file_stat.st_mode & S_IFREG)) return 1; 
+	if ((stat(path, &file_stat) == 0) && (file_stat.st_mode & S_IFREG)) return 1;
 	return 2;
 }
 
@@ -214,5 +213,3 @@ bool CDROM_Interface_Fake :: GetMediaTrayStatus(bool& mediaPresent, bool& mediaC
 	trayOpen     = false;
 	return true;
 }
-
-

@@ -55,7 +55,7 @@ enum SVGACards {
 	SVGA_TsengET4K,
 	SVGA_TsengET3K,
 	SVGA_ParadisePVGA1A
-}; 
+};
 
 extern SVGACards svgaCard;
 extern MachineType machine;

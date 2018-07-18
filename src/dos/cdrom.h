@@ -31,8 +31,8 @@
 #include "dosbox.h"
 #include "mem.h"
 #include "mixer.h"
-#include "SDL.h"
-#include "SDL_thread.h"
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_thread.h>
 
 #if defined(C_SDL_SOUND)
 #include "SDL_sound.h"
@@ -76,13 +76,13 @@ public:
 	virtual bool	PauseAudio			(bool resume) = 0;
 	virtual bool	StopAudio			(void) = 0;
 	virtual void	ChannelControl		(TCtrl ctrl) = 0;
-	
+
 	virtual bool	ReadSectors			(PhysPt buffer, bool raw, unsigned long sector, unsigned long num) = 0;
 
 	virtual bool	LoadUnloadMedia		(bool unload) = 0;
-	
+
 	virtual void	InitNewMedia		(void) {};
-};	
+};
 
 class CDROM_Interface_SDL : public CDROM_Interface
 {
@@ -129,7 +129,7 @@ public:
 	void	ChannelControl		(TCtrl ctrl) { return; };
 	bool	ReadSectors			(PhysPt /*buffer*/, bool /*raw*/, unsigned long /*sector*/, unsigned long /*num*/) { return true; };
 	bool	LoadUnloadMedia		(bool /*unload*/) { return true; };
-};	
+};
 
 class CDROM_Interface_Image : public CDROM_Interface
 {
@@ -140,7 +140,7 @@ private:
 		virtual int getLength() = 0;
 		virtual ~TrackFile() { };
 	};
-	
+
 	class BinaryFile : public TrackFile {
 	public:
 		BinaryFile(const char *filename, bool &error);
@@ -151,7 +151,7 @@ private:
 		BinaryFile();
 		std::ifstream *file;
 	};
-	
+
 	#if defined(C_SDL_SOUND)
 	class AudioFile : public TrackFile {
 	public:
@@ -166,7 +166,7 @@ private:
 		int lastSeek;
 	};
 	#endif
-	
+
 	struct Track {
 		int number;
 		int attr;
@@ -177,7 +177,7 @@ private:
 		bool mode2;
 		TrackFile *file;
 	};
-	
+
 public:
 	CDROM_Interface_Image		(Bit8u subUnit);
 	virtual ~CDROM_Interface_Image	(void);
@@ -197,7 +197,7 @@ public:
 	bool	LoadUnloadMedia		(bool unload);
 	bool	ReadSector		(Bit8u *buffer, bool raw, unsigned long sector);
 	bool	HasDataTrack		(void);
-	
+
 static	CDROM_Interface_Image* images[26];
 
 private:
@@ -211,14 +211,14 @@ static  struct imagePlayer {
 		SDL_mutex 	*mutex;
 		Bit8u   buffer[8192];
 		int     bufLen;
-		int     currFrame;	
+		int     currFrame;
 		int     targetFrame;
 		bool    isPlaying;
 		bool    isPaused;
 		bool    ctrlUsed;
 		TCtrl   ctrlData;
 	} player;
-	
+
 	void 	ClearTracks();
 	bool	LoadIsoFile(char *filename);
 	bool	CanReadPVD(TrackFile *file, int sectorSize, bool mode2);
@@ -242,7 +242,7 @@ typedef	std::vector<Track>::iterator	track_it;
 #define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
 
 #include <windows.h>
-#include "wnaspi32.h"			// Aspi stuff 
+#include "wnaspi32.h"			// Aspi stuff
 
 class CDROM_Interface_Aspi : public CDROM_Interface
 {
@@ -264,11 +264,11 @@ public:
 	bool	PauseAudio			(bool resume);
 	bool	StopAudio			(void);
 	void	ChannelControl		(TCtrl ctrl) { return; };
-	
+
 	bool	ReadSectors			(PhysPt buffer, bool raw, unsigned long sector, unsigned long num);
 
 	bool	LoadUnloadMedia		(bool unload);
-	
+
 private:
 	DWORD	GetTOC				(LPTOC toc);
 	HANDLE	OpenIOCTLFile		(char cLetter, BOOL bAsync);
@@ -277,7 +277,7 @@ private:
 	bool	ScanRegistry		(HKEY& hKeyBase);
 	BYTE	GetHostAdapter		(char* hardwareID);
 	bool	GetVendor			(BYTE HA_num, BYTE SCSI_Id, BYTE SCSI_Lun, char* szBuffer);
-		
+
 	// ASPI stuff
 	BYTE	haId;
 	BYTE	target;
@@ -315,7 +315,7 @@ public:
 	bool	PauseAudio			(bool resume);
 	bool	StopAudio			(void);
 	void	ChannelControl		(TCtrl ctrl);
-	
+
 	bool	ReadSector			(Bit8u *buffer, bool raw, unsigned long sector);
 	bool	ReadSectors			(PhysPt buffer, bool raw, unsigned long sector, unsigned long num);
 
@@ -365,7 +365,7 @@ private:
 		SDL_mutex		*mutex;
 		Bit8u   buffer[8192];
 		int     bufLen;
-		int     currFrame;	
+		int     currFrame;
 		int     targetFrame;
 		bool    isPlaying;
 		bool    isPaused;
