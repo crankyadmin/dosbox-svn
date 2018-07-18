@@ -34,9 +34,7 @@ TARGET		:=	$(notdir $(CURDIR))
 BUILD		:=	build
 SOURCES		:=	src src/cpu src/debug src/dos src/fpu src/gui \
 				src/hardware src/hardware/serialport src/ints src/libs \
-				src/misc src/platform/wii src/platform/wii/fonts \
-				src/platform/wii/images src/platform/wii/libwiigui \
-				src/platform/wii/sounds src/shell
+				src/misc src/platform/switch src/shell
 DATA		:=	data
 INCLUDES	:=	include src/platform/switch
 EXEFS_SRC	:=	exefs_src
@@ -63,7 +61,7 @@ LIBS	:= -lnx -lSDL_mixer -ljpeg -lpng -lz -lSDL -lfreetype
 # list of directories containing libraries, this must be the top level containing
 # include and lib
 #---------------------------------------------------------------------------------
-LIBDIRS	:= $(PORTLIBS) $(LIBNX) 
+LIBDIRS	:= $(PORTLIBS) $(LIBNX)
 
 
 #---------------------------------------------------------------------------------
